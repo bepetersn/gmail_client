@@ -6,6 +6,8 @@ import os
 from email.header import decode_header
 from imaplib import ParseFlags
 
+from gmail_client.codecs import decode_email_header, ensure_decoded
+
 
 def parse_flags(headers):
     """
@@ -280,7 +282,7 @@ class Message(object):
         self.message = email.message_from_string(raw_email)
         self.headers = parse_headers(self.message)
 
-        self.subject = parse_subject(self.message['subject'])
+        self.subject = ensure_decoded(parse_subject(self.message['subject']))
         self.sent_at = datetime.datetime.fromtimestamp(time.mktime(email.utils.parsedate_tz(self.message['date'])[:9]))
 
         self.to = self.message['to']
@@ -288,8 +290,8 @@ class Message(object):
         self.delivered_to = self.message['delivered_to']
 
         parsed_email = ParsedEmail(self.message)
-        self.body = parsed_email.txt
-        self.html = parsed_email.html
+        self.body = ensure_decoded(parsed_email.txt)
+        self.html = ensure_decoded(parsed_email.html)
         self.attachments = parsed_email.attachments
 
         self.flags = parse_flags(raw_headers)
