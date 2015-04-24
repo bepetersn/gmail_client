@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import datetime
 import email
 import re
@@ -55,13 +56,34 @@ def parse_subject(encoded_header):
     return dh
 
 
-class Attachment(object):
+class BaseAttachment(object):
+
+    def __init__(self):
+        self.is_pointer = False
+
+
+class PointerAttachment(BaseAttachment):
+
+    def __init__(self):
+        super(PointerAttachment, self).__init__()
+        self.is_pointer = True
+
+        # Set these fields on fetch.
+        self.name = None
+
+    @abstractmethod
+    def fetch(self):
+        pass
+
+
+class Attachment(BaseAttachment):
     """
     Attachments are files sent in the email.
 
     """
 
     def __init__(self, name, content_type, content):
+        super(Attachment, self).__init__()
         self.name = name
         self.content_type = content_type
         self.content = content

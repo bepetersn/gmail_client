@@ -20,3 +20,9 @@
 1. New email parser, with nested fetching of attachments
 2. Bug fixes
 3. `Message.has_attachments` property added
+
+0.0.7.8
+
+1. Add an `is_pointer` field on a new `BaseAttachment` which
+   Attachment inherits from. Also add a new `PointerAttachment`
+   class that has it set to false by default.
