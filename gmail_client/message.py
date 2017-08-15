@@ -48,7 +48,7 @@ def parse_labels(headers):
 def parse_subject(encoded_header):
 
     if encoded_header is not None:
-        dh = encoded_header.encode('UTF-8')
+        dh = decode_email_header(encoded_header)
     else:
         dh = ''
 
