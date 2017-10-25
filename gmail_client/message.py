@@ -174,6 +174,7 @@ class Message(object):
         self.gmail = mailbox.gmail if mailbox else None
 
         self.message = None
+        self.raw = None
         self.headers = {}
 
         self.subject = None
@@ -301,15 +302,25 @@ class Message(object):
         if re.search(r'X-GM-MSGID (\d+)', raw_headers):
             self.message_id = re.search(r'X-GM-MSGID (\d+)', raw_headers).groups(1)[0]
 
-    def fetch(self): return self.message if self.message else self.forced_fetch()
+    def fetch(self): 
+        if self.message:
+            return self.message
+        else:
+            if self.raw:
+                self._parse(self.raw)
+                return self.message
+            else:
+                return self.forced_fetch()
 
     @property
     def has_attachments(self):
         return len(self.attachments) > 0
 
-    def forced_fetch(self):
+    def forced_fetch(self, parse=False):
         _, results = self.gmail.imap.uid('FETCH', self.uid, '(BODY.PEEK[] FLAGS X-GM-THRID X-GM-MSGID X-GM-LABELS)')
-        self._parse(results[0])
+        self.raw = results[0]
+        if parse:
+            self._parse(self.raw)
 
         return self.message
 
