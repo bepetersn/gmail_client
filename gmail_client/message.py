@@ -310,13 +310,13 @@ class Message(object):
                 self._parse(self.raw)
                 return self.message
             else:
-                return self.forced_fetch()
+                return self.forced_fetch(parse=True)
 
     @property
     def has_attachments(self):
         return len(self.attachments) > 0
 
-    def forced_fetch(self, parse=False):
+    def forced_fetch(self, parse=True):
         _, results = self.gmail.imap.uid('FETCH', self.uid, '(BODY.PEEK[] FLAGS X-GM-THRID X-GM-MSGID X-GM-LABELS)')
         self.raw = results[0]
         if parse:
